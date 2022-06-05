@@ -13,14 +13,13 @@ int main(int argc, char const *argv[])
     double tiempo;
     int i, k;
     float *x, *y;
-    float a = 0.0;
+    float a = 0.0, a1 = 0.0;
 
-    FILE *fp = fopen("sinOptimizar.txt", "w");
+    FILE *fp = fopen("optimizados_p2.txt", "w");
 
     setlocale(LC_NUMERIC, "");
 
-    // bucle que vaya aumentando los valores de N
-    for (int n = 0; n <= N + 1; n += INCREMENTO)
+    for (int n = 0; n <= N+1; n += INCREMENTO)
     {
 
         x = malloc(sizeof(float) * n);
@@ -29,29 +28,36 @@ int main(int argc, char const *argv[])
         //calentamiento de la caché
         for (k = 0; k < 1; k++)
         {
-            a = 0.0;
-            for (i = 0; i < n; i++)
+            a = a1 = 0.0;
+
+            for (i = 0; i < n; i += 2)
             {
                 a = a + x[i] * y[i];
+                a1 = a1 + x[i + 1] * y[i + 1];
             }
+
+            a = a + a1;
         }
 
-        // medir el tiempo para cada N
         gettimeofday(&inicio, NULL);
 
-        for (k = 1; k < ITER; k++)
+        for (k = 0; k < ITER; k++)
         {
-            a = 0.0;
-            for (i = 0; i < n; i++)
+            a = a1 = 0.0;
+
+            for (i = 0; i < n; i += 2)
             {
                 a = a + x[i] * y[i];
+                a1 = a1 + x[i + 1] * y[i + 1];
             }
+
+            a = a + a1;
         }
 
         gettimeofday(&fin, NULL);
         tiempo = (fin.tv_sec - inicio.tv_sec) + (fin.tv_usec - inicio.tv_usec) / 1.e6;
 
-        // escribir tiempo en el fichero
+        //escribir tiempo en el fichero 
         fprintf(fp, "%d %f\n", n, tiempo);
 
         printf("Tiempo de ejecución: %f\n", tiempo);
